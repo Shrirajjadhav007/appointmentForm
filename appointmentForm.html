@@ -1,0 +1,14 @@
+<template>
+      <lightning-card title="Appointment Form">
+        <lightning-record-form
+        columns='2'
+        layout-type="Full"
+        object-api-name={objectApiName}
+        fields={fields}
+        mode="edit"
+        onsubmit={handleSubmit}
+        onsuccess={handleSuccess}
+        onerror={handleError}
+      ></lightning-record-form>
+      </lightning-card>
+</template>

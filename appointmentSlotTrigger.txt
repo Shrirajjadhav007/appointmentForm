@@ -1,0 +1,33 @@
+trigger SlotValidation on Appointment_Slot__c (before insert) {
+    if (Trigger.isInsert && Trigger.isBefore) {
+        
+        List<Appointment_Slot__c> newSlots = Trigger.new;
+
+        
+        Set<Date> appointmentDates = new Set<Date>();
+        
+        for (Appointment_Slot__c slot : newSlots) {
+            appointmentDates.add(slot.Appointment_Date__c);
+        }
+
+        
+        List<Appointment_Slot__c> existingSlots = [
+            SELECT Start_Time__c, End_Time__c, Appointment_Date__c 
+            FROM Appointment_Slot__c
+            WHERE Appointment_Date__c IN :appointmentDates
+        ];
+
+        
+        for (Appointment_Slot__c newSlot : newSlots) {
+            for (Appointment_Slot__c existingSlot : existingSlots) {
+        
+                if (newSlot.Appointment_Date__c == existingSlot.Appointment_Date__c &&
+                    newSlot.Start_Time__c < existingSlot.End_Time__c &&
+                    newSlot.End_Time__c > existingSlot.Start_Time__c) {
+                    newSlot.addError('An appointment with the selected start time already exists. Please choose a different time.');
+                    break; 
+                }
+            }
+        }
+    }
+}
